@@ -15,18 +15,15 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 FROM alpine:3.18
 
 LABEL maintainer="Project Maintainer"
-LABEL description="To Do Application"
+LABEL description="Todo Application"
 
 WORKDIR /app
 
-# Add non-root user
-RUN adduser -D appuser
+# Create shared directory
+RUN mkdir -p /usr/src/app/shared
 
 # Copy binary from builder
 COPY --from=builder /build/main .
-
-# Use non-root user
-USER appuser
 
 # Use exec form with full path
 ENTRYPOINT ["/app/main"]

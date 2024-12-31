@@ -12,8 +12,15 @@ spec:
       labels:
         app: todo
     spec:
+      volumes:
+        - name: image-cache
+          persistentVolumeClaim:
+            claimName: shared-claim
       containers:
         - name: todo
-          image: sathirak/todo:2
+          image: sathirak/todo:5
           ports:
             - containerPort: 3000
+          volumeMounts:
+            - name: image-cache
+              mountPath: /app/cache
