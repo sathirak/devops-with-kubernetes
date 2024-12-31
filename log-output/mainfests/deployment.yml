@@ -14,19 +14,24 @@ spec:
     spec:
       containers:
         - name: log-output-writer
-          image: sathirak/log-output-writer:1
-          command: ["/app/main"]  # Fixed command path
+          image: sathirak/log-output-writer:2
+          command: ["/app/main"] 
           volumeMounts:
             - name: shared-image
               mountPath: /usr/src/app/files
         - name: log-output-reader
-          image: sathirak/log-output-reader:1
-          command: ["/app/main"]  # Fixed command path
+          image: sathirak/log-output-reader:4
+          command: ["/app/main"] 
           ports:
             - containerPort: 3000
           volumeMounts:
             - name: shared-image
               mountPath: /usr/src/app/files
+            - name: shared-data
+              mountPath: /usr/src/app/shared
       volumes:
         - name: shared-image
           emptyDir: {}
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: shared-claim

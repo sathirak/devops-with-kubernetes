@@ -19,17 +19,11 @@ LABEL description="Log Output Application"
 
 WORKDIR /app
 
-# Add non-root user
-RUN adduser -D appuser
-
-# Create required directory
-RUN mkdir -p /usr/src/app/files && chown -R appuser:appuser /usr/src/app
+# Create shared directory
+RUN mkdir -p /usr/src/app/shared
 
 # Copy binary from builder
 COPY --from=builder /build/main .
-
-# Use non-root user
-USER appuser
 
 # Use exec form with full path
 ENTRYPOINT ["/app/main"]

@@ -19,14 +19,11 @@ LABEL description="Ping Pong Application"
 
 WORKDIR /app
 
-# Add non-root user
-RUN adduser -D appuser
+# Create shared directory
+RUN mkdir -p /usr/src/app/shared
 
 # Copy binary from builder
 COPY --from=builder /build/main .
-
-# Use non-root user
-USER appuser
 
 # Use exec form with full path
 ENTRYPOINT ["/app/main"]

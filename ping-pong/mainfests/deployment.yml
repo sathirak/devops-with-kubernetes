@@ -14,6 +14,13 @@ spec:
     spec:
       containers:
         - name: ping-pong
-          image: sathirak/ping-pong:1
+          image: sathirak/ping-pong:4
+          volumeMounts:
+            - name: shared-data
+              mountPath: /usr/src/app/shared
           ports:
             - containerPort: 3000
+      volumes:
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: shared-claim
