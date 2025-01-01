@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-output-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-output
+  template:
+    metadata:
+      labels:
+        app: log-output
+    spec:
+      containers:
+        - name: log-output-writer
+          image: sathirak/log-output-writer:10
+          command: ["/app/main"] 
+        - name: log-output-reader
+          image: sathirak/log-output-reader:10
+          command: ["/app/main"] 
+          ports:
+            - containerPort: 3000
