@@ -6,6 +6,7 @@ VERSION ?= latest
 # Build Docker images
 build-todo:
 	docker build ./todo/ -t sathirak/todo:${VERSION}
+	docker build ./todo-backend/ -t sathirak/todo-backend:${VERSION}
 
 build-ping-pong:
 	docker build ./ping-pong/ -t sathirak/ping-pong:${VERSION}
@@ -21,6 +22,7 @@ build-all: build-ping-pong build-todo build-log-reader build-log-writer
 # Push Docker images
 push-todo: build-todo
 	docker push sathirak/todo:${VERSION}
+	docker push sathirak/todo-backend:${VERSION}
 
 push-ping-pong: build-ping-pong
 	docker push sathirak/ping-pong:${VERSION}
@@ -34,7 +36,7 @@ push-log-writer: build-log-writer
 push-all: push-ping-pong push-log-reader push-log-writer
 
 # Combined commands for single-app deployment
-todo: build-todo push-todo deploy-todo
+todo: build-todo push-todo deploy-todo 
 	@echo "Todo app built, pushed and deployed"
 
 ping-pong: build-ping-pong push-ping-pong deploy-ping-pong
@@ -47,6 +49,7 @@ log-output: build-log-reader build-log-writer push-log-reader push-log-writer de
 
 deploy-todo:
 	kubectl apply -f ./todo/mainfests/
+	kubectl apply -f ./todo-backend/mainfests/
 
 deploy-ping-pong:
 	kubectl apply -f ./ping-pong/mainfests/
@@ -60,6 +63,7 @@ deploy-all: deploy-ping-pong deploy-todo deploy-log-output
 
 delete-todo:
 	kubectl delete -f ./todo/mainfests/
+	kubectl delete -f ./todo-backend/mainfests/
 
 delete-ping-pong:
 	kubectl delete -f ./ping-pong/mainfests/

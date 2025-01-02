@@ -18,7 +18,7 @@ spec:
             claimName: shared-claim
       containers:
         - name: todo
-          image: sathirak/todo:5
+          image: sathirak/todo:6
           ports:
             - containerPort: 3000
           volumeMounts:

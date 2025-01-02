@@ -15,7 +15,7 @@ const imagePath = "/app/cache/current.jpg"
 
 func downloadImage() error {
 	resp, err := http.Get("https://picsum.photos/1200")
-	if err != nil {
+	if (err != nil) {
 		return err
 	}
 	defer resp.Body.Close()
@@ -90,18 +90,51 @@ func main() {
 					<img src="/image" alt="Random Picture" style="max-width: 100%;">
 					
 					<div class="todo-container">
-						<form>
-							<input type="text" maxlength="140" placeholder="Enter your todo (max 140 chars)">
-							<button type="submit">Create Todo</button>
-						</form>
-						
-						<h2>Existing Todos:</h2>
-						<div class="todo-list">
-							<div class="todo-item">Thanks for doing this course guys</div>
-							<div class="todo-item">Everyone included in the program rocks</div>
-							<div class="todo-item">WOuld love to even get a physical certification for a price, really important for a person like me an best of luck to yall</div>
-						</div>
-					</div>
+						 <form id="todoForm" onsubmit="return submitTodo(event)">
+                            <input type="text" id="todoInput" maxlength="140" placeholder="Enter your todo (max 140 chars)" required>
+                            <button type="submit">Create Todo</button>
+                        </form>
+                        
+                        <h2>Existing Todos:</h2>
+                        <div id="todoList" class="todo-list"></div>
+                    </div>
+
+                    <script>
+                        function loadTodos() {
+                            fetch('/todos')
+                                .then(response => response.json())
+                                .then(todos => {
+                                    const todoList = document.getElementById('todoList');
+                                    todoList.innerHTML = todos.map(todo => 
+                                        '<div class="todo-item">' + todo.text + '</div>'
+                                    ).join('');
+                                })
+                                .catch(error => console.error('Error loading todos:', error));
+                        }
+
+                        function submitTodo(event) {
+                            event.preventDefault();
+                            const input = document.getElementById('todoInput');
+                            const text = input.value.trim();
+                            
+                            if (text) {
+                                fetch('/todos', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({text})
+                                })
+                                .then(() => {
+                                    input.value = '';
+                                    loadTodos();
+                                })
+                                .catch(error => console.error('Error creating todo:', error));
+                            }
+                            return false;
+                        }
+
+                        // Load todos when page loads
+                        loadTodos();
+                    </script>
 				</body>
 			</html>
 		`)
