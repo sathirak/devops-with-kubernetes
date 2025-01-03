@@ -5,13 +5,16 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
 type Status struct {
-	Timestamp string `json:"timestamp"`
-	Message   string `json:"message"`
-	PingPongs int    `json:"pingpongs"`
+	Timestamp     string `json:"timestamp"`
+	Message       string `json:"message"`
+	PingPongs     int    `json:"pingpongs"`
+	ConfigMessage string `json:"config_message"`
+	FileContent   string `json:"file_content"`
 }
 
 func getPingPongs() int {
@@ -36,6 +39,15 @@ func getPingPongs() int {
 	return count
 }
 
+func readInfoFile() string {
+	content, err := os.ReadFile("/usr/src/app/files/information.txt")
+	if err != nil {
+		log.Printf("Error reading information.txt: %v", err)
+		return "Error reading file"
+	}
+	return string(content)
+}
+
 func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -44,10 +56,15 @@ func main() {
 
 		status.Timestamp = time.Now().UTC().Format(time.RFC3339Nano)
 		status.PingPongs = getPingPongs()
+		status.ConfigMessage = os.Getenv("MESSAGE")
+		status.FileContent = readInfoFile()
 
 		w.Header().Set("Content-Type", "text/plain")
-		fmt.Fprintf(w, "%s\nPing / Pongs: %d",
-			status.Timestamp, status.PingPongs)
+		fmt.Fprintf(w, "%s\nPing / Pongs: %d\nmessage: %s\nfile contents:\n%s",
+			status.Timestamp,
+			status.PingPongs,
+			status.ConfigMessage,
+			status.FileContent)
 	})
 
 	http.ListenAndServe(":3000", nil)

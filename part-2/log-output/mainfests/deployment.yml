@@ -16,9 +16,26 @@ spec:
       containers:
         - name: log-output-writer
           image: sathirak/log-output-writer:10
-          command: ["/app/main"] 
+          command: ["/app/main"]
+          volumeMounts:
+            - name: config-volume
+              mountPath: /usr/src/app/files
+          envFrom:
+            - secretRef:
+                name: log-output-secret
+
         - name: log-output-reader
-          image: sathirak/log-output-reader:10
-          command: ["/app/main"] 
+          image: sathirak/log-output-reader:11
+          command: ["/app/main"]
+          volumeMounts:
+            - name: config-volume
+              mountPath: /usr/src/app/files
+          envFrom:
+            - secretRef:
+                name: log-output-secret
           ports:
             - containerPort: 3000
+      volumes:
+        - name: config-volume
+          configMap:
+            name: log-output-configmap
