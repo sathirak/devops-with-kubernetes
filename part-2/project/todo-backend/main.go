@@ -7,11 +7,15 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	_ "github.com/lib/pq"
 )
 
-const port = ":3000"
+const (
+	port          = ":3000"
+	maxTodoLength = 140
+)
 
 type Todo struct {
 	ID   int    `json:"id"`
@@ -65,6 +69,9 @@ func getTodos() ([]Todo, error) {
 }
 
 func createTodo(text string) (Todo, error) {
+	if len(text) > maxTodoLength {
+		return Todo{}, fmt.Errorf("todo text exceeds maximum length of %d characters", maxTodoLength)
+	}
 	var todo Todo
 	err := db.QueryRow(`
 		INSERT INTO todo (todo)
@@ -74,6 +81,19 @@ func createTodo(text string) (Todo, error) {
 	return todo, err
 }
 
+func logRequest(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		handler(w, r)
+		log.Printf(
+			"Method: %s, Path: %s, Duration: %v",
+			r.Method,
+			r.URL.Path,
+			time.Since(start),
+		)
+	}
+}
+
 func main() {
 
 	if err := initDB(); err != nil {
@@ -81,7 +101,7 @@ func main() {
 	}
 	defer db.Close()
 
-	http.HandleFunc("/todos", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/todos", logRequest(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 		switch r.Method {
@@ -95,22 +115,25 @@ func main() {
 		case http.MethodPost:
 			var todo Todo
 			if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
+				log.Printf("Error decoding request: %v", err)
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
-				}
-			
+			}
+
 			newTodo, err := createTodo(todo.Text)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				log.Printf("Error creating todo: %v", err)
+				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			
+
+			log.Printf("Created new todo: ID=%d, Text='%s'", newTodo.ID, newTodo.Text)
 			w.WriteHeader(http.StatusCreated)
 			json.NewEncoder(w).Encode(newTodo)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
-	})
+	}))
 
 	fmt.Printf("Server started on port %s\n", port)
 	if err := http.ListenAndServe(port, nil); err != nil {
