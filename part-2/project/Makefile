@@ -27,6 +27,9 @@ push-all: push-todo push-todo-backend
 deploy-cluster:
 	kubectl apply -f ./cluster/manifests/
 
+deploy-job:
+	kubectl apply -f ./job/manifests/
+
 deploy-postgres:
 	kubectl apply -f ./postgres/manifests/
 
