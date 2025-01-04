@@ -68,9 +68,13 @@ func main() {
 	}
 	defer db.Close()
 
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
 	http.HandleFunc("/pingpong", func(w http.ResponseWriter, r *http.Request) {
 		count, err := incrementCounter()
-		if (err != nil) {
+		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -80,7 +84,7 @@ func main() {
 
 	http.HandleFunc("/count", func(w http.ResponseWriter, r *http.Request) {
 		count, err := getCounter()
-		if (err != nil) {
+		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

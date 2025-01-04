@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: ping-pong
-          image: sathirak/ping-pong:12
+          image: sathirak/ping-pong:13
           env:
             - name: POSTGRES_HOST
               value: "postgres-svc"
