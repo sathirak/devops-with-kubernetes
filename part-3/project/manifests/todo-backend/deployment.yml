@@ -36,3 +36,10 @@ spec:
                 secretKeyRef:
                   name: dwk-project-secret
                   key: POSTGRES_DB
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"

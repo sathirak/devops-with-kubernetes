@@ -25,3 +25,10 @@ spec:
           volumeMounts:
             - name: image-cache
               mountPath: /app/cache
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
