@@ -23,6 +23,13 @@ spec:
           envFrom:
             - secretRef:
                 name: log-output-secret
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
 
         - name: log-output-reader
           image: sathirak/log-output-reader:13
@@ -35,7 +42,10 @@ spec:
                 name: log-output-secret
           ports:
             - containerPort: 3000
-      volumes:
-        - name: config-volume
-          configMap:
-            name: log-output-configmap
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
