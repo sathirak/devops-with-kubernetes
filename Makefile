@@ -101,4 +101,4 @@ encrypt:
 	sops --encrypt \
 	--age age1n76yj5wawhxrcu8ck7324u459t5tph2vcj7gymju85nt2xhm3dzqzl3hxf \
 	--encrypted-regex '^(data)$' \
-	$(file).yml > $(file).enc.yml
+	$(file).yml > secret.enc.yml

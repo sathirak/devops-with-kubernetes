@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: dwk
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: sathirak/postgres-backup:latest
+            env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_DB
+            - name: URL
+              value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres-svc:5432/$(POSTGRES_DB)"
+            - name: BUCKET_NAME
+              value: "dwk-bucket"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/var/secrets/google/key.json"
+            volumeMounts:
+            - name: google-cloud-key
+              mountPath: /var/secrets/google
+          volumes:
+          - name: google-cloud-key
+            secret:
+              secretName: gcp-secret
+          restartPolicy: OnFailure

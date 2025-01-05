@@ -29,3 +29,9 @@
 -   Requires experienced DevOps engineers and DBAs to maintain
 -   Security needs to be kept updated
 -   Disaster Recovvery needs to be setup
+
+Articles used on my research
+
+[IBM Guide](https://www.cloudcomputing-insider.de/was-ist-database-as-a-service-dbaas-a-692502/)
+
+[Cloud Computing Insider](https://www.cloudcomputing-insider.de/was-ist-database-as-a-service-dbaas-a-692502/)

@@ -10,3 +10,6 @@ sops --encrypt \
     --age age1n76yj5wawhxrcu8ck7324u459t5tph2vcj7gymju85nt2xhm3dzqzl3hxf \
     --encrypted-regex '^(data)$' \
     ./secret.yml > secret.enc.yml
+
+
+kubectl create secret generic gcp-secret --from-file=key.json=./devops-with-kubernetes-446407-8aca25f77e66.json -n dwk
