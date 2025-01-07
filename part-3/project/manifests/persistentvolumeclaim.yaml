@@ -5,7 +5,7 @@ metadata:
   namespace: dwk-project
   name: shared-claim
 spec:
-  storageClassName: manual
+  storageClassName: standard
   accessModes:
     - ReadWriteOnce
   resources:

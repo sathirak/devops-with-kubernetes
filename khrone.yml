@@ -1,0 +1,32 @@
+jobs:
+  - name: up
+    steps:
+      - cmds:
+          - run: gcloud container clusters create dwk-cluster --zone=europe-north1-b --cluster-version=1.29 --disk-size=32 --num-nodes=3 --machine-type=e2-micro
+          - run: export SOPS_AGE_KEY_FILE=./key.txt && sops -d /home/bigchungus/Projects/devops-with-kubernetes/part-3/project/manifests/secret.enc.yml > ./secret.yml
+          - run: kubectl create namespace dwk-project
+          - run: kubectl apply -f ./secret.yml
+          - run: rm secret.yml
+          - run: kubectl apply -k ./part-3/project/manifests
+  - name: view
+    steps:
+      - cmds:
+          - run: kubectl get pods -n dwk-project
+          - run: kubectl get services -n dwk-project
+          - run: kubectl get deployments -n dwk-project
+          - run: kubectl get cronjobs -n dwk-project
+          - run: kubectl get secrets -n dwk-project
+          - run: kubectl get configmaps -n dwk-project
+  - name: down
+    steps:
+      - cmds:
+          - run: kubectl delete namespace dwk-project
+          - run: gcloud container clusters delete dwk-cluster --zone=europe-north1-b
+  - name: node
+    steps:
+      - cmds:
+          - run: gcloud container clusters describe dwk-cluster --zone=europe-north1-b
+  - name: upgrade
+    steps:
+      - cmds:
+          - run: gcloud container clusters update dwk-cluster --zone=europe-north1-b --enable-autoscaling --min-nodes=1 --max-nodes=5
